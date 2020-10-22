@@ -4,5 +4,5 @@ public class Hello {
 		System.out.print("Hello word!");
 		System.out.print("同步编辑");
 	}
-//同步测试
+//同步测试2
 }
