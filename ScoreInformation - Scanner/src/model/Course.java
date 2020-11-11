@@ -58,30 +58,39 @@ public class Course {
 	}
 
 	public void setcid() {
+		System.out.println("请输入课程ID：");
 		cid = sc.next();
 	}
 
 	public void setcourse() {
+		System.out.println("请输入课程名：");
 		course = sc.next();
 	}
 
 	public void setvalue() {
+		System.out.println("请输入学分：");
 		value = sc.next();
 	}
 
 	public void settime() {
+		System.out.println("请输入学时：");
 		time = sc.next();
 	}
 
 	public void setTCHid() {
+		System.out.println("请输入教师ID：");
 		TCHid = sc.next();
 	}
 
 	public void setTCHname() {
+		System.out.println("请输入教师姓名：");
 		TCHname = sc.next();
 	}
 
 	public void AddInf() {
+
+		if (IsExit(getcourse()))
+			return;
 
 		try {
 			File fwrite = new File("D:/JavaWorkplace/ScoreInformation - Scanner/data/Course.txt");
@@ -114,12 +123,20 @@ public class Course {
 
 		Course a = null;
 
+		LineNum lineNum = new LineNum();
+		int l = lineNum.getLineNumber("D:/JavaWorkplace/ScoreInformation - Scanner/data/Course.txt");
+
+		if (num > l || num < 1) {
+			System.out.println("构造失败！！");
+			return null;
+		}
+
 		try {
-			File fread = new File("D:/JavaWorkplace/ScoreInformation - Scanner/data/Course.txt"); // 要读取以上路径的output.txt文件
+			File fread = new File("D:/JavaWorkplace/ScoreInformation - Scanner/data/Course.txt");
 
-			InputStreamReader reader = new InputStreamReader(new FileInputStream(fread)); // 建立一个输入流对象reader
+			InputStreamReader reader = new InputStreamReader(new FileInputStream(fread));
 
-			BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言
+			BufferedReader br = new BufferedReader(reader);
 
 			String line = "";
 			while (i < num) {
@@ -139,10 +156,7 @@ public class Course {
 		return a;
 	}
 
-	public void IsExit() {
-		System.out.print("请输入要添加的课程名：");
-
-		String s = sc.next();
+	public boolean IsExit(String s) {
 
 		try {
 			BufferedReader br = new BufferedReader(
@@ -152,18 +166,20 @@ public class Course {
 
 			while ((temp = br.readLine()) != null) {
 				if (temp.contains(s)) {
-					System.out.println("课程已创建！！！");
+//					System.out.println("课程已创建！！！");
 					br.close();
-					return;
+					return true;
 				}
 			}
 			br.close();
 
-			System.out.println("课程未创建！");
+			System.out.println("新课程创建成功！");
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		return false;
 	}
 
 	void Info() {

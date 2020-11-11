@@ -88,7 +88,11 @@ abstract class Person {
 	/* 抽象方法 */
 	abstract void Info();
 
+	/****************************************/
+	/************ 添加到文件 ****************/
+	/****************************************/
 	public void AddInf(String type) {
+
 		switch (type) {
 		case "Admin":
 			Path = APath;
@@ -127,6 +131,9 @@ abstract class Person {
 		}
 	}
 
+	/****************************************/
+	/************ 从文件读取 ****************/
+	/****************************************/
 	public void RInfo(String type) {
 
 		switch (type) {
@@ -144,11 +151,11 @@ abstract class Person {
 		}
 
 		try {
-			File fread = new File(Path); // 要读取以上路径的output.txt文件
+			File fread = new File(Path);
 
-			InputStreamReader reader = new InputStreamReader(new FileInputStream(fread)); // 建立一个输入流对象reader
+			InputStreamReader reader = new InputStreamReader(new FileInputStream(fread));
 
-			BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言
+			BufferedReader br = new BufferedReader(reader);
 
 			String line = "";
 
@@ -181,6 +188,9 @@ abstract class Person {
 		System.out.print("\n");
 	}
 
+	/****************************************/
+	/************ 从文件中删除 **************/
+	/****************************************/
 	public void DelInf(String type) {
 
 		switch (type) {
@@ -224,6 +234,9 @@ abstract class Person {
 		}
 	}
 
+	/****************************************/
+	/************ 删除文件所有内容 **********/
+	/****************************************/
 	public void DelAll(String type) {
 
 		switch (type) {
@@ -249,7 +262,11 @@ abstract class Person {
 		}
 	}
 
+	/****************************************/
+	/************ 从文件中重构 **************/
+	/****************************************/
 	public Person CreatObj(String type, int num) {
+
 		int i = 0;
 		Person a = null;
 		switch (type) {
@@ -266,12 +283,20 @@ abstract class Person {
 			System.out.println("ERROR");
 		}
 
+		LineNum lineNum = new LineNum();
+		int l = lineNum.getLineNumber(Path);
+
+		if (num > l || num < 1) {
+			System.out.println("构造失败！！");
+			return null;
+		}
+
 		try {
-			File fread = new File(Path); // 要读取以上路径的output.txt文件
+			File fread = new File(Path);
 
-			InputStreamReader reader = new InputStreamReader(new FileInputStream(fread)); // 建立一个输入流对象reader
+			InputStreamReader reader = new InputStreamReader(new FileInputStream(fread));
 
-			BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言
+			BufferedReader br = new BufferedReader(reader);
 
 			String line = "";
 			while (i < num) {
@@ -284,7 +309,7 @@ abstract class Person {
 			if (type == "Admin")
 				a = new Admin(word[0], word[1], word[2], word[3], word[4], word[5]);
 			if (type == "Teacher")
-				a = new Teacher(word[0], word[1], word[2], word[3], word[4], word[5]);
+				a = new Teacher(word[0], word[1], word[2], word[3], word[4], word[5], word[6]);
 			if (type == "Student")
 				a = new Student(word[0], word[1], word[2], word[3], word[4], word[5]);
 
@@ -294,9 +319,90 @@ abstract class Person {
 			e.printStackTrace();
 		}
 		return a;
-//		System.out.print("\n");
 	}
 
+	/****************************************/
+	/************ 设置所有字段 **************/
+	/****************************************/
+	public void setAll() {
+		setID();
+		setname();
+		setgender();
+		setbirthdate();
+		setcollege();
+	}
+
+	/****************************************/
+	/************ 判断是否存在 **************/
+	/****************************************/
+	public boolean IsExit(String type) {
+		switch (type) {
+		case "Admin":
+			Path = APath;
+			break;
+		case "Teacher":
+			Path = TPath;
+			break;
+		case "Student":
+			Path = SPath;
+			break;
+		default:
+			System.out.println("ERROR");
+		}
+
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(Path));
+
+			String temp = null;
+
+			while ((temp = br.readLine()) != null) {
+				if (temp.contains(getID())) {
+					br.close();
+					return true;
+				}
+			}
+			br.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	public boolean IsNext() {
+		String s;
+		s = sc.next();
+		if (s.equals("Y") || s.equals("y"))
+			return true;
+
+		// System.out.println("期待您下次使用！");
+		return false;
+	}
+
+	abstract void start();
+//	public void start(String type) {
+//		System.out.println("是否设置该对象的值(Y/N)：");
+//		if (IsNext()) {
+//			setAll();
+//			System.out.println("是否添加到文件中(Y/N)：");
+//			if (IsNext()) {
+//				AddInf(type);
+//				System.out.println("是否打印该对象的信息(Y/N)：");
+//				if (IsNext()) {
+//					Info();
+//					System.out.println("是否打印文件信息(Y/N)：");
+//					if (IsNext()) {
+//						RInfo(type);
+//					} else
+//						return;
+//				} else
+//					return;
+//			} else
+//				return;
+//		} else
+//			return;
+//	}
 }
 
 /* 管理员类 */
@@ -360,7 +466,12 @@ class Admin extends Person {
 	}
 
 	public void AddInf() {
+		if (IsExit("Admin")) {
+//			System.out.println("已存在！");
+			return;
+		}
 		super.AddInf("Admin");
+
 		try {
 			File fwrite = new File(Path);
 
@@ -385,29 +496,81 @@ class Admin extends Person {
 	public void DelInf() {
 		super.DelInf("Admin");
 	}
+
+	public void setAll() {
+		super.setAll();
+		setstation();
+		System.out.println();
+	}
+
+	public void start() {
+		System.out.println("管理员类");
+		System.out.println("是否设置该对象的值(Y/N)：");
+		if (IsNext()) {
+			setAll();
+			System.out.println("是否添加到文件中(Y/N)：");
+			if (IsNext()) {
+				AddInf();
+				System.out.println("是否打印该对象的信息(Y/N)：");
+				if (IsNext()) {
+					Info();
+					System.out.println("是否打印文件信息(Y/N)：");
+					if (IsNext()) {
+						RInfo();
+					}
+				} else {
+					System.out.println("是否打印文件信息(Y/N)：");
+					if (IsNext()) {
+						RInfo();
+					}
+				}
+			} else {
+				System.out.println("是否打印该对象的信息(Y/N)：");
+				if (IsNext()) {
+					Info();
+					System.out.println("是否打印文件信息(Y/N)：");
+					if (IsNext()) {
+						RInfo();
+					}
+				} else {
+					System.out.println("是否打印文件信息(Y/N)：");
+					if (IsNext()) {
+						RInfo();
+					}
+				}
+			}
+		} else
+			return;
+	}
 }
 
 /* 教师类 */
 class Teacher extends Person {
+	private String graduate;
 	private String title;
 
 	/* 无参构造函数，调用本类构造函数 */
 	Teacher() {
-		this("");
+		this("", "");
 	}
 
 	/* 有参构造函数，调用本类构造函数 */
-	Teacher(String title) {
-		this("", "", "", "", "", title);
+	Teacher(String graduate, String title) {
+		this("", "", "", "", "", graduate, title);
 	}
 
 	/* 有参构造函数，调用父类构造函数 */
-	Teacher(String id, String name, String gender, String birthdate, String college, String title) {
+	Teacher(String id, String name, String gender, String birthdate, String college, String graduate, String title) {
 		super(id, name, gender, birthdate, college);
+		this.graduate = graduate;
 		this.title = title;
 	}
 
 	/* 子类方法1类 */
+	public String getgraduate() {
+		return graduate;
+	}
+
 	public String gettitle() {
 		return title;
 	}
@@ -424,6 +587,11 @@ class Teacher extends Person {
 		super.setname();
 	}
 
+	public void setgraduate() {
+		System.out.println("请输入教师毕业专业：");
+		this.graduate = sc.next();
+	}
+
 	public void settitle() {
 		System.out.println("请输入职称：");
 		title = sc.next();
@@ -436,16 +604,23 @@ class Teacher extends Person {
 		System.out.println("性别：" + getgender());
 		System.out.println("出生年月：" + getbirthdate());
 		System.out.println("学院：" + getcollege());
+		System.out.println("毕业专业：" + getcollege());
 		System.out.println("职称：" + gettitle());
 		System.out.println();
 	}
 
 	public void AddInf() {
+		if (IsExit("Teacher")) {
+//			System.out.println("已存在！");
+			return;
+		}
 		super.AddInf("Teacher");
 		try {
 			File fwrite = new File(Path);
 
 			BufferedWriter out = new BufferedWriter(new FileWriter(fwrite, true));
+
+			out.write(getgraduate() + " ");
 
 			out.write(gettitle() + "\r\n");
 
@@ -459,7 +634,7 @@ class Teacher extends Person {
 	}
 
 	public void RInfo() {
-		System.out.println("教师工号\t\t" + "教师姓名\t\t" + "教师性别\t\t" + "教师出生日期\t" + "教师学院\t\t" + "教师职称");
+		System.out.println("教师工号\t\t" + "教师姓名\t\t" + "教师性别\t\t" + "教师出生日期\t" + "教师学院\t\t" + "毕业专业\t\t" + "教师职称");
 		super.RInfo("Teacher");
 	}
 
@@ -471,6 +646,52 @@ class Teacher extends Person {
 		Teacher a = null;
 		a = (Teacher) super.CreatObj("Teacher", num);
 		return a;
+	}
+
+	public void setAll() {
+		super.setAll();
+		setgraduate();
+		settitle();
+	}
+
+	public void start() {
+		System.out.println("教师类");
+		System.out.println("是否设置该对象的值(Y/N)：");
+		if (IsNext()) {
+			setAll();
+			System.out.println("是否添加到文件中(Y/N)：");
+			if (IsNext()) {
+				AddInf();
+				System.out.println("是否打印该对象的信息(Y/N)：");
+				if (IsNext()) {
+					Info();
+					System.out.println("是否打印文件信息(Y/N)：");
+					if (IsNext()) {
+						RInfo();
+					}
+				} else {
+					System.out.println("是否打印文件信息(Y/N)：");
+					if (IsNext()) {
+						RInfo();
+					}
+				}
+			} else {
+				System.out.println("是否打印该对象的信息(Y/N)：");
+				if (IsNext()) {
+					Info();
+					System.out.println("是否打印文件信息(Y/N)：");
+					if (IsNext()) {
+						RInfo();
+					}
+				} else {
+					System.out.println("是否打印文件信息(Y/N)：");
+					if (IsNext()) {
+						RInfo();
+					}
+				}
+			}
+		} else
+			return;
 	}
 }
 
@@ -528,6 +749,10 @@ class Student extends Person {
 	}
 
 	public void AddInf() {
+		if (IsExit("Student")) {
+//			System.out.println("已存在！");
+			return;
+		}
 		super.AddInf("Student");
 		try {
 			File fwrite = new File(Path);
@@ -558,5 +783,50 @@ class Student extends Person {
 		Student a = null;
 		a = (Student) super.CreatObj("Student", num);
 		return a;
+	}
+
+	public void setAll() {
+		super.setAll();
+		setspeciality();
+	}
+
+	public void start() {
+		System.out.println("学生类");
+		System.out.println("是否设置该对象的值(Y/N)：");
+		if (IsNext()) {
+			setAll();
+			System.out.println("是否添加到文件中(Y/N)：");
+			if (IsNext()) {
+				AddInf();
+				System.out.println("是否打印该对象的信息(Y/N)：");
+				if (IsNext()) {
+					Info();
+					System.out.println("是否打印文件信息(Y/N)：");
+					if (IsNext()) {
+						RInfo();
+					}
+				} else {
+					System.out.println("是否打印文件信息(Y/N)：");
+					if (IsNext()) {
+						RInfo();
+					}
+				}
+			} else {
+				System.out.println("是否打印该对象的信息(Y/N)：");
+				if (IsNext()) {
+					Info();
+					System.out.println("是否打印文件信息(Y/N)：");
+					if (IsNext()) {
+						RInfo();
+					}
+				} else {
+					System.out.println("是否打印文件信息(Y/N)：");
+					if (IsNext()) {
+						RInfo();
+					}
+				}
+			}
+		} else
+			return;
 	}
 }
